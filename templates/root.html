@@ -1,0 +1,116 @@
+
+
+
+  {% if session['logged_in'] %}
+
+  <nav class="navbar navbar-expand-lg navbar-light bg-light static-top mb-5 shadow">
+<div class="container">
+  <h2 class="navbar-brand">Colegiul Național Emanuil Gojdu</h2>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+  <div class="collapse navbar-collapse" id="navbarResponsive">
+    <ul class="navbar-nav ml-auto">
+      <li class="nav-item active">
+        <a class="nav-link" href="/">Meniu
+              <span class="sr-only">(current)</span>
+            </a>
+      </li>
+
+      {% if session['teacher'] %}
+        <li class="nav-item">
+          <a class="nav-link" href="/createGroup">Creare Grup</a>
+        </li>
+      {% endif %}
+      <li class="nav-item">
+        <a class="nav-link" href="/account">Cont</a>
+      </li>
+
+      <li class="nav-item">
+        <a class="btn btn-danger" href="/logout">Logout</a>
+      </li>
+
+    </ul>
+  </div>
+</div>
+</nav>
+
+    {% extends 'template.html' %}
+
+
+
+
+      {% block body %}
+        <div class="container">
+          <h1>Bună, {{ session['given_name'] }} {{ session['sir_name']}}!</h1>
+          {% if session['teacher'] %}
+            <h2>Grupurile tale</h2> <br>
+            <hr>
+            <table class="table table-bordered">
+            {% for group in session['owned_groups'] %}
+
+                <tbody>
+                  <tr>
+                    <td><a class="btn btn-light" href = "viewGroup/{{ group[1] }}">{{ group[1] }}  </a></td>
+                    <td><a class="btn btn-info" href = "addMemberToGroup/{{ group[1] }}">Adauga Membru</a></td>
+                    <td><a class="btn btn-info" href = "uploadHomeworkAsTeacher/{{ group[1] }}">Adauga Tema</a></td>
+                </tr>
+            </tbody>
+
+            {% endfor %}
+          {% endif %}
+        </table>
+          <h2>Grupurile în care te afli</h2> <br>
+          <hr>
+          {% for group in session['groups_in'] %}
+            <a class="btn btn-light" href = "viewGroupNotOwned/{{ group }}">{{ group }} </a> <br>
+          {% endfor %}
+        </div>
+
+    {% endblock %}
+  {% else %}
+
+    {% extends 'templateLogReg.html' %}
+
+
+
+
+
+    {% block bodyLog %}
+
+
+        <div class="container-fluid">
+        <div class="row no-gutter">
+          <div class="d-none d-md-flex col-md-4 col-lg-6 bg-image"></div>
+          <div class="col-md-8 col-lg-6">
+            <div class="login d-flex align-items-center py-5">
+              <div class="container">
+                <div class="row">
+                  <div class="col-md-9 col-lg-8 mx-auto">
+                    <h3 class="login-heading mb-4">Bun venit!</h3>
+                    <form method="post">
+                      <div class="form-label-group">
+                        <input type="text" id="inputEmail" name = "username" class="form-control" placeholder="Nume de utilizator" required autofocus>
+                        <label for="inputEmail">Nume de utilizator</label>
+                      </div>
+
+                      <div class="form-label-group">
+                        <input type="password" name = "password" id="inputPassword" class="form-control" placeholder="Parola" required>
+                        <label for="inputPassword">Parola</label>
+                      </div>
+
+                      <button class="btn btn-lg btn-primary btn-block btn-login text-uppercase font-weight-bold mb-2" type="submit">Login</button>
+                      <div class="text-center">
+                        <a class="btn btn-dark" href="/register">Înregistrare</a></div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    {% endblock %}
+
+  {% endif %}

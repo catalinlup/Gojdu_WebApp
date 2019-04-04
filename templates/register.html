@@ -1,0 +1,59 @@
+{% extends 'template.html' %}
+
+{% block body %}
+  {% if session['logged_in'] %}
+    Eroare! Esti deja logat! Nu e nevoie sa te inregistrezi!
+  {% else %}
+
+  <form method="post">
+      <div class="form-group">
+        <label for="username">Nume de utilizator</label>
+        <input name="username" type="text" class="form-control" id="username" aria-describedby="emailHelp" placeholder="Nume de utilizator">
+      </div>
+
+      <div class="form-group">
+        <label for="password">Parola</label>
+        <input name="password" type="password" class="form-control" id="password" aria-describedby="emailHelp" placeholder="Parola">
+      </div>
+
+      <div class="form-group">
+        <label for="sir_name">Nume</label>
+        <input name="sir_name" type="text" class="form-control" id="sir_name" aria-describedby="emailHelp" placeholder="Nume">
+      </div>
+
+      <div class="form-group">
+        <label for="given_name">Prenume</label>
+        <input name="given_name" type="text" class="form-control" id="given_name" aria-describedby="emailHelp" placeholder="Prenume">
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input name="email" type="text" class="form-control" id="email" aria-describedby="emailHelp" placeholder="Email">
+      </div>
+
+      <div class="form-group">
+        <label for="profile">Profil</label>
+        <select name = "profile" class="form-control">
+          <option value="mate_info">Mate-Info</option>
+          <option value="mate_info_bilingv">Mate-Info Bilingv</option>
+          <option value="mate_info_intensiv">Mate-Info Intensiv</option>
+          <option value="stiinte">Stiintele Naturii</option>
+          <option value="socio">Stiinte Sociale</option>
+          <option value="fara">Nu se aplică</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="code">Cod(nu completa dacă nu ești profesor)</label>
+        <input name="code" type="text" class="form-control" id="code" aria-describedby="emailHelp" placeholder="Cod">
+      </div>
+
+      <button type="submit" class="btn btn-success">Submit</button>
+      <hr>
+      <a class="btn btn-primary" href="/">Back</a>
+    </form>
+
+
+
+  {% endif %}
+{% endblock %}

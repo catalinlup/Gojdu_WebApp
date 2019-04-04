@@ -1,0 +1,17 @@
+{% extends 'template.html' %}
+
+{% block body %}
+  {% if session['logged_in'] %}
+    <title>Incarca</title>
+    <h1>Încarcă fișierul cu tema</h1>
+    <form method=post enctype=multipart/form-data>
+      <input type=file name=file>
+      <input type=submit value=Upload>
+    </form>
+    <hr>
+    <button class="btn btn-primary" onclick="history.back()">Back</button>
+  {% else %}
+    <h1>Eroare! Nu esti logat!</h1>
+
+  {% endif %}
+{% endblock %}

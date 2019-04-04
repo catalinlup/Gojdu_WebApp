@@ -1,0 +1,63 @@
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light static-top mb-5 shadow">
+<div class="container">
+<h2 class="navbar-brand">Colegiul Național Emanuil Gojdu</h2>
+<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+<div class="collapse navbar-collapse" id="navbarResponsive">
+  <ul class="navbar-nav ml-auto">
+    <li class="nav-item">
+      <a class="nav-link" href="/">Meniu</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link active" href="/createGroup">Creare Grup
+          <span class="sr-only">(current)</span>
+      </a>
+    </li>
+
+    <li class="nav-item">
+      <a class="nav-link" href="/account">Cont</a>
+    </li>
+
+    <li class="nav-item">
+      <a class="btn btn-danger" href="/logout">Logout</a>
+    </li>
+
+  </ul>
+</div>
+</div>
+</nav>
+
+{% extends 'template.html' %}
+
+{% block body %}
+  {% if session['teacher'] %}
+
+  <section id="cover">
+  <div id="cover-caption">
+      <div id="container" class="container">
+          <div class="row text-white">
+              <div class="col-sm-6 offset-sm-3 text-center">
+                  <h1 class="display-4">Bootstrap 4</h1>
+                  <div class="info-form">
+                      <form method="post" class="form-inlin justify-content-center">
+                          <div class="form-group">
+                              <label class="sr-only">Nume</label>
+                              <input type="text" class="form-control" name="name" placeholder="Nume">
+                          </div>
+
+                          <button type="submit" class="btn btn-success " value="Submit">Creare</button>
+                      </form>
+                  </div>
+                  <br>
+              </div>
+          </div>
+      </div>
+  </div>
+</section>
+
+  {% else %}
+    <h1>Eroare! Nu esti logat!</h1>
+  {% endif %}
+{% endblock %}

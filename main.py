@@ -1,0 +1,150 @@
+from  flask import *
+from UtilityFunctions import *
+import os
+import datetime
+import time
+
+import random
+app = Flask(__name__)
+app.secret_key = '87131829192'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+manager = DB_Manager()
+
+@app.route('/',methods=['GET','POST'])
+def root():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        if LoginDataValid(username,password):
+            AddDataToSession(username,session)
+        return redirect(url_for('root'))
+    if 'logged_in' in session and session['logged_in']:
+        UpdateSession(session)
+    return render_template('root.html',session = session)
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for('root'))
+
+@app.route('/register',methods=['GET','POST'])
+def register():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        sir_name = request.form['sir_name']
+        given_name = request.form['given_name']
+        profile = request.form['profile']
+        email = request.form['email']
+        cod = request.form['code']
+        if RegistrationDataValid(username,password,sir_name,given_name,profile,email) == "OK":
+            RegisterData(username,password,sir_name,given_name,profile,email,(cod==TEACHER_CODE))
+            return redirect(url_for('root'))
+        else:
+            return redirect(url_for('register'))
+    return render_template('register.html',session = session)
+
+@app.route('/createGroup',methods=['GET','POST'])
+def createGroup():
+    if request.method == 'POST':
+        name = request.form['name']
+        if RegisterGroupValid(session['username'],name) == "OK":
+            RegisterGroup(session['username'],name)
+            UpdateSession(session)
+            return redirect(url_for('root'))
+        else:
+            return redirect(url_for('createGroup'))
+    return render_template('createGroup.html',session = session)
+
+@app.route('/addMemberToGroup/<groupName>',methods=['GET','POST'])
+def addMembertoGroup(groupName):
+    if request.method == 'POST':
+        username = request.form['username']
+        val = addMemberToGroup(groupName,session['username'],username)
+        if val == 'OK':
+            return redirect(url_for('root'))
+        else:
+            return redirect('/addMemberToGroup/{}'.format(groupName))
+    return render_template('addMemberToGroup.html',session = session, nume = groupName)
+
+    return redirect(url_for('root'))
+
+@app.route('/viewGroup/<groupName>')
+def viewGroup(groupName):
+    members = getGroupMembers(groupName,session['username'])
+    givenHomework = getGivenHomeworks(groupName,session['username'])
+    return render_template('viewGroup.html',session = session,members = members,givenHomework=givenHomework)
+
+@app.route('/viewGroupNotOwned/<groupName>',methods=['GET','POST'])
+def viewGroupNotOwned(groupName):
+    members = getGroupMembers(groupName.split('_')[1],groupName.split('_')[0])
+    givenHomework = getGivenHomeworks(groupName.split('_')[1],groupName.split('_')[0])
+    return render_template('viewGroupNotOwned.html',session = session,members = members,owner = groupName.split('_')[0],givenHomework=givenHomework)
+
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+@app.route('/uploadHomeworkAsTeacher/<groupName>', methods=['GET', 'POST'])
+def upload_file(groupName):
+    if request.method == 'POST':
+        # check if the post request has the file part
+        if 'file' not in request.files:
+            flash('No file part')
+            return redirect(request.url)
+        file = request.files['file']
+        # if user does not select file, browser also
+        # submit an empty part without filename
+        if file.filename == '':
+            flash('No selected file')
+            return redirect(request.url)
+        if file and allowed_file(file.filename):
+            ts = time.time()
+            filename = str(datetime.datetime.fromtimestamp(ts).strftime('db_%Y_%m_%d_%H_%M_%S_%s_%f'))+file.filename
+            addHomeworksToGroup(groupName,session['username'],request.form['homeworkname'],filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            return redirect(url_for('root'))
+    return render_template('upload.html',session = session)
+
+@app.route('/uploadHomworkAsStudent/<homeworkfilename>',methods=['GET','POST'])
+def submitFile(homeworkfilename):
+    if request.method == 'POST':
+        # check if the post request has the file part
+        if 'file' not in request.files:
+            flash('No file part')
+            return redirect(request.url)
+        file = request.files['file']
+        # if user does not select file, browser also
+        # submit an empty part without filename
+        if file.filename == '':
+            flash('No selected file')
+            return redirect(request.url)
+        if file and allowed_file(file.filename):
+            ts = time.time()
+            filename = str(datetime.datetime.fromtimestamp(ts).strftime('db_%Y_%m_%d_%H_%M_%S_%s_%f'))+file.filename
+            SubmitHomework(session['username'],filename,homeworkfilename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            return redirect(url_for('root'))
+    return render_template('SubmitHomework.html',session = session)
+
+@app.route('/delete/<homeworkfilename>')
+def delete(homeworkfilename):
+    deleteHomeworksFromGroup(session['username'],session['username'],homeworkfilename)
+    return redirect(url_for('root'))
+
+@app.route('/download/<filename>')
+def download(filename):
+    return send_from_directory(UPLOAD_FOLDER,filename)
+
+@app.route('/viewSubmits/<homeworkfilename>')
+def viewSubmits(homeworkfilename):
+    submits = GetSubmittedHomeworks(homeworkfilename)
+    return render_template('viewSubmits.html',session = session, submits = submits)
+
+@app.route('/account')
+def account():
+    return render_template('cont.html',session = session)
+
+if __name__ == '__main__':
+    app.run(host='192.168.0.12',port=5005,debug = True)

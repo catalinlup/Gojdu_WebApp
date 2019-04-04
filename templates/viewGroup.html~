@@ -1,0 +1,33 @@
+{% extends 'template.html' %}
+
+{% block body %}
+  {% if session['logged_in'] %}
+
+    <hr>
+    <h2>Temele sunt:</h2>
+    <table class="table">
+      {% for homework in givenHomework %}
+      <tr>
+        <td> {{ homework[0] }} </td>
+        <td><a href="/download/{{ homework[1] }}" download> Descarcă Instrucțiunile </a></td>
+        <td><a href = "/viewSubmits/{{ homework[1] }}">Vezi temele trimise</a></td>
+        <td><a href = "/delete/{{ homework[1] }}"> Sterge Tema </a></td>
+      </tr>
+      {% endfor %}
+    </table>
+
+  <hr>
+  <h2>Membrii sunt:</h2>
+  <ul class="list-group">
+    {% for member in members %}
+      <li class="list-group-item">{{ member }} </li>
+    {% endfor %}
+  </ul>
+
+  <hr>
+  <button class="btn btn-primary" onclick="history.back()">Back</button>
+
+  {% else %}
+    <h1>Eroare! Nu esti logat!</h1>
+  {% endif %}
+{% endblock %}

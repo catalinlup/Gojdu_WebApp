@@ -1,0 +1,18 @@
+{% extends 'template.html' %}
+
+{% block body %}
+  {% if session['teacher'] %}
+    <title>Incarca</title>
+    <h1>Incarcă fișierul cu instrucțiunile temei</h1>
+    <form method=post enctype=multipart/form-data>
+      Numele temei: <input type=text name=homeworkname> <br>
+      <input type=file name=file>
+      <input type=submit value=Upload>
+    </form>
+    <hr>
+    <button class="btn btn-primary" onclick="history.back()">Back</button>
+  {% else %}
+    <h1>Eroare! Nu esti logat!</h1>
+
+  {% endif %}
+{% endblock %}

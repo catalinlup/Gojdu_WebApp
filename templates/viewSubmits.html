@@ -1,0 +1,17 @@
+{% extends 'template.html' %}
+
+{% block body %}
+  {% if session['logged_in'] %}
+    <h2>Temele trimise</h2>
+    <hr>
+    <ul class="list-group">
+    {% for submit in submits %}
+      <li class="list-group-item"><a href="/download/{{ submit[1] }}" download> {{ submit[0] }}  </a></li>
+    {% endfor %}
+  </ul>
+  <hr>
+  <button class="btn btn-primary" onclick="history.back()">Back</button>
+  {% else %}
+    <h1>Eroare! Nu esti logat!</h1>
+  {% endif %}
+{% endblock %}

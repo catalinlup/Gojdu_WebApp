@@ -1,0 +1,80 @@
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light static-top mb-5 shadow">
+<div class="container">
+<h2 class="navbar-brand">Colegiul Național Emanuil Gojdu</h2>
+<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+<div class="collapse navbar-collapse" id="navbarResponsive">
+  <ul class="navbar-nav ml-auto">
+    <li class="nav-item">
+      <a class="nav-link" href="/">Meniu</a>
+    </li>
+
+    {% if session['teacher'] %}
+      <li class="nav-item">
+        <a class="nav-link" href="/createGroup">Creare Grup
+
+        </a>
+      </li>
+    {% endif %}
+
+    <li class="nav-item">
+      <a class="nav-link active" href="/account">Cont
+        <span class="sr-only">(current)</span>
+      </a>
+    </li>
+
+    <li class="nav-item">
+      <a class="btn btn-danger" href="/logout">Logout</a>
+    </li>
+
+  </ul>
+</div>
+</div>
+</nav>
+
+{% extends 'template.html' %}
+
+{% block body %}
+  {% if session['logged_in'] %}
+
+      <h1>Detalii cont</h1>
+      <hr>
+      <table class="table">
+          <tr>
+              <td>Nume</td>
+              <td>{{ session['sir_name'] }}</td>
+          </tr>
+
+          <tr>
+              <td>Prenume</td>
+              <td>{{ session['given_name'] }}</td>
+          </tr>
+
+          <tr>
+              <td>Nume de utilizator</td>
+              <td>{{ session['username'] }}</td>
+          </tr>
+
+          <tr>
+              <td>Email</td>
+              <td>{{ session['email'] }}</td>
+          </tr>
+
+          <tr>
+              <td>Statut</td>
+              {% if session['teacher'] %}
+                  <td>Profesor</td>
+              {% else %}
+                  <td>Elev</td>
+              {% endif %}
+          </tr>
+
+      </table>
+
+
+  {% else %}
+    <h1>Eroare! Nu esti logat!</h1>
+  {% endif %}
+{% endblock %}

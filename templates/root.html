@@ -3,7 +3,8 @@
 
   {% if session['logged_in'] %}
 
-  <nav class="navbar navbar-expand-lg navbar-light bg-light static-top mb-5 shadow">
+
+  <nav class="navbar sticky-top navbar-expand-lg navbar-light bg-light static-top mb-5 shadow">
 <div class="container">
   <h2 class="navbar-brand">Colegiul Național Emanuil Gojdu</h2>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
@@ -54,6 +55,7 @@
                     <td><a class="btn btn-light" href = "viewGroup/{{ group[1] }}">{{ group[1] }}  </a></td>
                     <td><a class="btn btn-info" href = "addMemberToGroup/{{ group[1] }}">Adauga Membru</a></td>
                     <td><a class="btn btn-info" href = "uploadHomeworkAsTeacher/{{ group[1] }}">Adauga Tema</a></td>
+                    <td><a class="btn btn-warning" href = "/deleteGroup/{{ group[1] }}">Șterge Grup</a></td>
                 </tr>
             </tbody>
 
@@ -87,22 +89,28 @@
               <div class="container">
                 <div class="row">
                   <div class="col-md-9 col-lg-8 mx-auto">
+                    {% include 'flash.html' %}
                     <h3 class="login-heading mb-4">Bun venit!</h3>
                     <form method="post">
-                      <div class="form-label-group">
+                      <div class="form-group form-control-lg">
+                        <label for="inputEmail"><b>Nume de utilizator</b></label>
                         <input type="text" id="inputEmail" name = "username" class="form-control" placeholder="Nume de utilizator" required autofocus>
-                        <label for="inputEmail">Nume de utilizator</label>
+
                       </div>
 
-                      <div class="form-label-group">
+                      <div class="form-group form-control-lg">
+                        <label for="inputPassword"><b>Parola</b></label>
                         <input type="password" name = "password" id="inputPassword" class="form-control" placeholder="Parola" required>
-                        <label for="inputPassword">Parola</label>
+
                       </div>
 
                       <button class="btn btn-lg btn-primary btn-block btn-login text-uppercase font-weight-bold mb-2" type="submit">Login</button>
                       <div class="text-center">
                         <a class="btn btn-dark" href="/register">Înregistrare</a></div>
                     </form>
+
+                    {% include 'watermark.html' %}
+
                   </div>
                 </div>
               </div>
@@ -110,6 +118,8 @@
           </div>
         </div>
       </div>
+
+
 
     {% endblock %}
 

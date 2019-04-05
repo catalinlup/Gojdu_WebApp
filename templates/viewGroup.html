@@ -20,7 +20,13 @@
   <h2>Membrii sunt:</h2>
   <ul class="list-group">
     {% for member in members %}
-      <li class="list-group-item">{{ member }} </li>
+      <li class="list-group-item">{{ member }}<br>
+      {% if session['username']!= member %}
+        <a href="/removeMemberFromGroup/{{ groupName }}/{{ member }}">Elimină</a>
+      {% else %}
+        <b>Proprietar</b>
+      {% endif %}
+      </li>
     {% endfor %}
   </ul>
 

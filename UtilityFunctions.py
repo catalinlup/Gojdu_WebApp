@@ -15,8 +15,12 @@ def RegistrationDataValid(username,password,sir_name,given_name,profile,email):
         return "Numele de utilizator deja există!"
     if len(password) < 8:
         return "Parola trebuie sa aibă cel puțin 8 caractere!"
-    if len(sir_name) == 0 or len(given_name) == 0 or len(profile) == 0 or len(email) == 0:
+    if len(sir_name) == 0 or len(given_name) == 0 or len(profile) == 0 or len(email) == 0 or len(username) == 0:
         return "Completați toate datele!"
+    if (' ' in sir_name) or (' ' in given_name) or (' ' in profile) or (' ' in email) or (' ' in username):
+        return "Spatiile nu sunt admise!"
+    if sir_name.isalnum() == False or given_name.isalnum() == False or username.isalnum() == False or password.isalnum() == False:
+        return "Folositi doar caractere alfanumerice"
     return "OK"
 
 def RegisterData(username,password,sir_name,given_name,profile,email,teacher):

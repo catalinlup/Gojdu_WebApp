@@ -1,9 +1,11 @@
 import pymongo
 from Configs import *
 from UtilityFunctions import *
+import os
 class DB_Manager:
     def __init__(self):
         self.myclient = pymongo.MongoClient("mongodb://localhost:27018/")
+        #self.myclient = pymongo.MongoClient("mongodb://localhost:27017/")
         self.mydb = self.myclient[DB_NAME]
         self.users = self.mydb['users']
         self.groups = self.mydb['groups']
@@ -17,6 +19,14 @@ class DB_Manager:
         dict = {'name':"{}_{}".format(owner,name),'owner':owner,'members':[],'given_homeworks':[]}
         self.groups.insert_one(dict)
 
+    def deleteGroup(self,name,owner):
+        if self.groupExists(name,owner):
+            gr = self.groups.find_one({'name':"{}_{}".format(owner,name)})
+            if 'given_homeworks' in gr.keys():
+                for h in gr['given_homeworks']:
+                    self.deleteHomeworksFromGroup(h[1])
+            self.groups.delete_one({'name':"{}_{}".format(owner,name)})
+
     def addMembersToGroup(self,name,owner,members):
         if self.groupExists(name,owner):
             post = self.groups.find_one({'name':"{}_{}".format(owner,name)})
@@ -25,6 +35,17 @@ class DB_Manager:
                 originalMembers = []
             elif members not in originalMembers:
                 originalMembers.append(members)
+            post['members'] = originalMembers
+            self.groups.save(post)
+
+    def removeMemberFromGroup(self,name,owner,member):
+        if self.groupExists(name,owner):
+            post = self.groups.find_one({'name':"{}_{}".format(owner,name)})
+            originalMembers = list(post['members'])
+            if originalMembers == None:
+                originalMembers = []
+            elif member in originalMembers:
+                originalMembers.remove(member)
             post['members'] = originalMembers
             self.groups.save(post)
 
@@ -40,27 +61,37 @@ class DB_Manager:
             filename = filename.replace('.','_')
             self.groups.save(post)
 
-    def deleteHomeworksFromGroup(self,name,owner,homeworkfilename):
+    def deleteHomeworksFromGroup(self,homeworkfilename):
         filesToDelete = []
-        if self.groupExists(name,owner):
-            filesToDelete.append(homeworkfilename)
-            post = self.groups.find_one({'name':"{}_{}".format(owner,name)})
+        filesToDelete.append(homeworkfilename)
+
+        groupList = self.groups.find()
+        gName = None
+        for g in groupList:
+            if 'given_homeworks' not in g.keys():
+                continue
+            for h in g['given_homeworks']:
+                if homeworkfilename in h:
+                    gName = g['name']
+
+        if gName != None:
+            post = self.groups.find_one({'name':gName})
             originalHomeworks = list(post['given_homeworks'])
-            originalHomeworks2 = [x[0] for x in originalHomeworks]
-            print(originalHomeworks2)
-            if originalHomeworks == None:
-                originalHomeworks = []
-            elif homeworkfilename in originalHomeworks2:
-                submittedHomeworks = self.homework.find({'homeworkfilename':filename})
-                for work in submittedHomeworks:
-                    filesToDelete.append(work['filename'])
-                for i in range(len(originalHomeworks)):
-                    if originalHomeworks[i][0] == homeworkfilename:
-                        del originalHomeworks[i]
+
+            for h in originalHomeworks:
+                if homeworkfilename in h:
+                    originalHomeworks.remove(h)
+                    break
             post['given_homeworks'] = originalHomeworks
-            
-            print(filesToDelete)
+
             self.groups.save(post)
+
+        uploadedHomework = self.homework.find({'homeworkfilename':homeworkfilename})
+        for h in uploadedHomework:
+            filesToDelete.append(h['filename'])
+
+        self.homework.delete_many({'homeworkfilename':homeworkfilename})
+        print(filesToDelete)
         self.deleteUploadedFiles(filesToDelete)
 
     def deleteUploadedFiles(self,files):

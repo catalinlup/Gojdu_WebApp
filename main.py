@@ -175,5 +175,5 @@ def account():
     return render_template('cont.html',session = session)
 
 if __name__ == '__main__':
-    #app.run(host='192.168.0.12',port=5005,debug = True)
-    app.run(debug=True)
+    app.run(host='192.168.0.12',port=5005,debug = True)
+    #app.run(debug=True)

@@ -17,6 +17,8 @@ def root():
         password = request.form['password']
         if LoginDataValid(username,password):
             AddDataToSession(username,session)
+        else:
+            flash("Nume de utilizator sau parolă greșită!")
         return redirect(url_for('root'))
     if 'logged_in' in session and session['logged_in']:
         UpdateSession(session)
@@ -37,10 +39,12 @@ def register():
         profile = request.form['profile']
         email = request.form['email']
         cod = request.form['code']
-        if RegistrationDataValid(username,password,sir_name,given_name,profile,email) == "OK":
+        val = RegistrationDataValid(username,password,sir_name,given_name,profile,email)
+        if  val == "OK":
             RegisterData(username,password,sir_name,given_name,profile,email,(cod==TEACHER_CODE))
             return redirect(url_for('root'))
         else:
+            flash(val)
             return redirect(url_for('register'))
     return render_template('register.html',session = session)
 
@@ -48,13 +52,24 @@ def register():
 def createGroup():
     if request.method == 'POST':
         name = request.form['name']
-        if RegisterGroupValid(session['username'],name) == "OK":
+        val = RegisterGroupValid(session['username'],name)
+        if val == "OK":
             RegisterGroup(session['username'],name)
             UpdateSession(session)
+            flash("Grup Creat!")
             return redirect(url_for('root'))
         else:
+            flash(val)
             return redirect(url_for('createGroup'))
     return render_template('createGroup.html',session = session)
+
+@app.route('/deleteGroup/<name>')
+def deleteGroup(name):
+    if session['teacher']:
+        DeleteGroup(name,session['username'])
+        UpdateSession(session)
+        flash('Grup Șters!')
+    return redirect(url_for('root'))
 
 @app.route('/addMemberToGroup/<groupName>',methods=['GET','POST'])
 def addMembertoGroup(groupName):
@@ -62,18 +77,27 @@ def addMembertoGroup(groupName):
         username = request.form['username']
         val = addMemberToGroup(groupName,session['username'],username)
         if val == 'OK':
+            flash("Membru adăugat!")
             return redirect(url_for('root'))
         else:
+            flash(val)
             return redirect('/addMemberToGroup/{}'.format(groupName))
     return render_template('addMemberToGroup.html',session = session, nume = groupName)
 
+    return redirect(url_for('root'))
+
+@app.route('/removeMemberFromGroup/<groupName>/<member>')
+def remMemberFromGroup(groupName,member):
+    if session['teacher'] and session['username'] != member:
+        removeMemberFromGroup(groupName,session['username'],member)
+        flash("Membru eliminat!")
     return redirect(url_for('root'))
 
 @app.route('/viewGroup/<groupName>')
 def viewGroup(groupName):
     members = getGroupMembers(groupName,session['username'])
     givenHomework = getGivenHomeworks(groupName,session['username'])
-    return render_template('viewGroup.html',session = session,members = members,givenHomework=givenHomework)
+    return render_template('viewGroup.html',session = session,members = members,givenHomework=givenHomework,groupName = groupName)
 
 @app.route('/viewGroupNotOwned/<groupName>',methods=['GET','POST'])
 def viewGroupNotOwned(groupName):
@@ -104,6 +128,7 @@ def upload_file(groupName):
             filename = str(datetime.datetime.fromtimestamp(ts).strftime('db_%Y_%m_%d_%H_%M_%S_%s_%f'))+file.filename
             addHomeworksToGroup(groupName,session['username'],request.form['homeworkname'],filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            flash("Temă adăugată!")
             return redirect(url_for('root'))
     return render_template('upload.html',session = session)
 
@@ -125,12 +150,15 @@ def submitFile(homeworkfilename):
             filename = str(datetime.datetime.fromtimestamp(ts).strftime('db_%Y_%m_%d_%H_%M_%S_%s_%f'))+file.filename
             SubmitHomework(session['username'],filename,homeworkfilename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            flash("Temă adăugată!")
             return redirect(url_for('root'))
     return render_template('SubmitHomework.html',session = session)
 
 @app.route('/delete/<homeworkfilename>')
 def delete(homeworkfilename):
-    deleteHomeworksFromGroup(session['username'],session['username'],homeworkfilename)
+    if session['teacher']:
+        deleteHomeworksFromGroup(homeworkfilename)
+        flash("Temă ștearsă!")
     return redirect(url_for('root'))
 
 @app.route('/download/<filename>')
@@ -147,4 +175,5 @@ def account():
     return render_template('cont.html',session = session)
 
 if __name__ == '__main__':
-    app.run(host='192.168.0.12',port=5005)
+    app.run(host='192.168.0.12',port=5005,debug = True)
+    #app.run(debug=True)

@@ -4,8 +4,8 @@ from UtilityFunctions import *
 import os
 class DB_Manager:
     def __init__(self):
-        #self.myclient = pymongo.MongoClient("mongodb://localhost:27018/")
-        self.myclient = pymongo.MongoClient("mongodb://localhost:27017/")
+        self.myclient = pymongo.MongoClient("mongodb://localhost:27018/")
+        #self.myclient = pymongo.MongoClient("mongodb://localhost:27017/")
         self.mydb = self.myclient[DB_NAME]
         self.users = self.mydb['users']
         self.groups = self.mydb['groups']

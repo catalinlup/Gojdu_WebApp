@@ -48,6 +48,12 @@ def register():
             return redirect(url_for('register'))
     return render_template('register.html',session = session)
 
+@app.route('/sendMessage',methods=['GET','POST'])
+def sendMessage():
+    if request.method == 'POST':
+        return redirect(url_for('root'))
+    return render_template('sendMessage.html',session = session)
+
 @app.route('/createGroup',methods=['GET','POST'])
 def createGroup():
     if request.method == 'POST':
@@ -160,6 +166,7 @@ def delete(homeworkfilename):
         deleteHomeworksFromGroup(homeworkfilename)
         flash("Temă ștearsă!")
     return redirect(url_for('root'))
+
 
 @app.route('/download/<filename>')
 def download(filename):

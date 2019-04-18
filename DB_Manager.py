@@ -2,6 +2,7 @@ import pymongo
 from Configs import *
 from UtilityFunctions import *
 import os
+import uuid
 class DB_Manager:
     def __init__(self):
         self.myclient = pymongo.MongoClient("mongodb://localhost:27018/")
@@ -10,6 +11,7 @@ class DB_Manager:
         self.users = self.mydb['users']
         self.groups = self.mydb['groups']
         self.homework = self.mydb['homeworks']
+        self.messages = self.mydb['messages']
 
     def addUser(self,username,password,sir_name,given_name,profile,email,teacher=False):
         dict = {'username':username,'password':password,'sir_name':sir_name,'given_name':given_name,'profile':profile,'email':email,'teacher':teacher}
@@ -127,6 +129,24 @@ class DB_Manager:
             if gr['members']!= None and username in gr['members']:
                 filteredGroups.append(gr['name'])
         return filteredGroups
+
+    def sendMessage(self,sender,receiver,text,title,date):
+        dc = {'sender':sender,'receiver':receiver,'text':text,'title':title,'date':date,'_id':str(uuid.uuid4().hex)}
+        self.messages.insert_one(dc)
+
+    def getAllMessagesByReceiver(self,receiver):
+        ret = []
+        messagesSent = self.messages.find({'receiver':receiver})
+        for mes in messagesSent:
+            ret.append(dict(mes))
+        return ret
+
+    def getAllMessagesBySender(self,sender):
+        ret = []
+        messagesSent = self.messages.find({'sender':sender})
+        for mes in messagesSent:
+            ret.append(dict(mes))
+        return ret
 
     def AddDataToSession(self,username,session):
         if self.usernameExists(username):

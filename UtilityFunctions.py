@@ -77,3 +77,25 @@ def getGroupsTheUserIsIn(username):
 
 def getGivenHomeworks(name,owner):
     return manager.getGivenHomeworks(name,owner)
+
+def SendMessage(sender,receiver,text,title):
+    if manager.usernameExists(sender) and manager.usernameExists(receiver):
+        manager.sendMessage(sender,receiver,text,title,str(datetime.datetime.now()))
+        return "OK"
+    return "Usermame does not exists"
+def SendMessageToUsers(sender,receivers,text,title):
+    for receiver in receivers:
+        SendMessage(sender,receiver,text,title)
+
+def GetMessagesBySender(sender):
+    if manager.usernameExists(sender):
+        return manager.getAllMessagesBySender(sender)
+    return []
+
+def GetMessagesByReceiver(receiver):
+    if manager.usernameExists(receiver):
+        return manager.getAllMessagesByReceiver(receiver)
+    return []
+
+
+    

@@ -1,0 +1,60 @@
+{% extends 'template.html' %}
+
+{% block body %}
+  {% if session['username'] %}
+    <div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="well well-sm">
+                <form class="" method="post">
+                    <fieldset>
+                        <legend class="text-xs-center header">Trimite mesaj</legend>
+
+                        <div class="form-group">
+                            <span class="col-md-1 offset-md-2 text-xs-center"><i class="fa fa-user bigicon"></i></span>
+                            <div class="col-md-8">
+                                <input id="username" name="username" type="text" placeholder="Nume de utilizator" class="form-control">
+                            </div>
+                        </div>
+                    
+
+                        <div class="form-group">
+                            <span class="col-md-1 offset-md-2 text-xs-center"><i class="fa fa-pencil-square-o bigicon"></i></span>
+                            <div class="col-md-8">
+                                <textarea class="form-control" id="message" name="message" placeholder="Scrieti mesajul aici" rows="7"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-md-12 text-xs-center">
+                                <button type="submit" class="btn btn-primary btn-lg">Trimite</button>
+                            </div>
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .header {
+        color: #36A0FF;
+        font-size: 27px;
+        padding: 10px;
+    }
+
+    .bigicon {
+        font-size: 35px;
+        color: #36A0FF;
+    }
+</style>
+
+
+
+  {% else %}
+    <h1>Eroare! Nu esti logat!</h1>
+  {% endif %}
+{% endblock %}
+
+
